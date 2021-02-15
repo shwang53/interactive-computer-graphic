@@ -1,0 +1,142 @@
+<!DOCTYPE HTML> 
+<html> 
+
+<!--
+ ! Create a 400x400 render target canvas with id #myGLCanvas
+ ! and run the javascript function main() to render something
+ ! to it.
+ !-->
+
+<body onload="main();">
+  <canvas id="myGLCanvas" width="400" height="400"></canvas>
+</body>
+
+
+<!--
+ ! Here is the javascript main() function that gets called
+ ! once the page is loaded. (Doesn't matter where in the html
+ ! file the javascript functions are defined.)
+ !-->
+
+<script>
+function main() {
+
+  /* Find the canvas labeled #myGLCanvas, and create a WebGL
+   * rendering context that sends its output to the canvas.
+   */
+
+  var canvas = document.getElementById("myGLCanvas");
+  var gl = canvas.getContext("webgl",{preserveDrawingBuffer: true});
+  if (!gl) alert("Failed to create WebGL context!");
+
+  /* Create a vertex shader that sets the pixel position
+   * of the vertex on the screen to its original x,y
+   * position. These shaders are designed to work with
+   * 4-D vectors for reasons we'll learn later, but only
+   * the x and y elements of the built-in 4-D vector
+   * gl_Position that communicates the result of the the
+   * vertex shader indicates the screen location of the
+   * pixel corresponding to the vertex.
+   */
+
+  /* First store the vertex shader program in a string ... */
+
+  var vertexShaderSource = 
+    "attribute vec3 aVertexPosition;                 \n" +
+    "void main() {                                   \n" +
+    "  gl_Position = vec4(aVertexPosition, 1.0);     \n" +
+    "}                                               \n";           
+
+  /* ... then let WebGL compile it. */
+
+  var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vertexShader, vertexShaderSource);
+  gl.compileShader(vertexShader);
+  if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS))
+    alert(gl.getShaderInfoLog(vertexShader));
+   
+
+  /* Create a fragment shader that sets the color of the
+   * pixels between the triangle vertices to white
+   * (red = 100%, green = 100%, blue = 100%, alpha = 100%).
+   * The 100% alpha means opaque, and we'll learn more about
+   * that later.
+   */
+
+  /* First store the fragment shader program in a string ... */
+
+  var fragmentShaderSource = 
+     "precision mediump float;                    \n"+
+     "void main() {                               \n"+
+     "  gl_FragColor = vec4(1.0, 0.33, 0.18, 1.0);  \n"+
+     "}                                           \n";
+
+  /* ... then let WebGL compile it. */
+
+  var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fragmentShader, fragmentShaderSource);
+  gl.compileShader(fragmentShader);
+  if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS))
+    alert(gl.getShaderInfoLog(fragmentShader));
+
+  /* Once a vertex and fragment shader have been compiled,
+   * tell WebGL to use them. 
+   */
+
+  var shaderProgram = gl.createProgram();
+  gl.attachShader(shaderProgram, vertexShader);
+  gl.attachShader(shaderProgram, fragmentShader);
+  gl.linkProgram(shaderProgram);
+  if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS))
+    alert("Failed to setup shaders");
+  gl.useProgram(shaderProgram);
+
+  /* Create a variable vertexPositionAttribute that points
+   * to the vertex shader variable aVertexPosition where
+   * each vertex in our triangle shape will be loaded into
+   * for shader processing.
+   */
+
+  var vertexPositionAttribute =
+    gl.getAttribLocation(shaderProgram, "aVertexPosition"); 
+
+  /* Create an array of the three 3-D vertices of the triangle.
+   * The default WebGL canvas expects vertices with x,y
+   * coordinates somewhere between (-1,-1) and (1,1).
+   */
+
+  var vertexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  var triangleVertices = [ 0.0,  0.5,  0.0,
+                          -0.5, -0.5,  0.0,
+                           0.5, -0.5,  0.0,
+
+  ];
+  gl.bufferData(gl.ARRAY_BUFFER,
+                new Float32Array(triangleVertices),
+                gl.STATIC_DRAW);
+  vertexBuffer.itemSize = 3;
+  vertexBuffer.numberOfItems = 3;
+
+  /* Set the background color to black * (0% red, 0% green,
+   * 0% blue, 100% opaque) and clear the canvas by setting
+   * all of its pixels to that color.
+   */
+
+  gl.clearColor(0.075, 0.16, 0.294, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  /* Point WebGL to your vertex list, and tell it to send
+   * those vertices to the GPU by loading each one into the
+   * vertex shader variable aVertexPosition.
+   */
+  
+  gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 
+                         vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(vertexPositionAttribute);
+  gl.drawArrays(gl.TRIANGLES, 0, vertexBuffer.numberOfItems);
+}
+</script>
+
+</html>
+
