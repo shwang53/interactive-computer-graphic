@@ -107,16 +107,72 @@ function main() {
 
   var vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  var triangleVertices = [ 0.0,  0.5,  0.0,
-                          -0.5, -0.5,  0.0,
-                           0.5, -0.5,  0.0,
+  var triangleVertices = [
+-0.6, 1.0, 
+-0.6, 0.6,
+-0.2, 0.6,
 
-  ];
+-0.6, 1.0,
+-0.2, 1.0,
+-0.2, 0.6,
+
+-0.2, 1.0,
+0.2, 1.0,
+-0.2, 0.6,
+
+0.2, 1.0,
+-0.2, 0.6,
+0.2,0.6,
+
+0.2, 1.0,
+0.2, 0.6,
+0.6, 1.0,
+
+//wait
+-0.2, -0.6,
+-0.6, -0.6,
+-0.6, -1.0,
+
+-0.2, -0.6,
+-0.6, -1.0,
+-0.2, -1.0,
+
+-0.2, -0.6,
+-0.2, -1.0,
+0.2, -1.0,
+
+-0.2, -0.6,
+0.2, -1.0,
+0.2,-0.6,
+
+0.2, -1.0,
+0.2,-0.6,
+0.6,-1.0,
+
+
+// divier
+
+0.6, -1.0,
+0.6, -0.6,
+0.2, -0.6,
+
+0.2, 0.6,
+0.6, 0.6,
+0.6, 1.0,
+
+-0.2, 0.6,
+0.2, 0.6,
+-0.2,-0.6,
+
+0.2,0.6,
+-0.2,-0.6,
+0.2,-0.6
+];
   gl.bufferData(gl.ARRAY_BUFFER,
                 new Float32Array(triangleVertices),
                 gl.STATIC_DRAW);
-  vertexBuffer.itemSize = 3;
-  vertexBuffer.numberOfItems = 3;
+  vertexBuffer.itemSize = 2;
+  vertexBuffer.numberOfItems = 42;
 
   /* Set the background color to black * (0% red, 0% green,
    * 0% blue, 100% opaque) and clear the canvas by setting
@@ -134,9 +190,7 @@ function main() {
   gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 
                          vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(vertexPositionAttribute);
-  gl.drawArrays(gl.TRIANGLES, 0, vertexBuffer.numberOfItems);
-}
+  gl.drawArrays(gl.TRIANGLES, 0, vertexBuffer.numberOfItems);}
 </script>
 
 </html>
-
